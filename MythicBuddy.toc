@@ -1,0 +1,12 @@
+## Interface: 110000
+## Title: MythicBuddy
+## Author: FancyPantsy
+## Version: 1.0
+
+
+init.lua
+dict.lua
+events.lua
+functions.lua
+frames.lua
+MythicBuddy.lua
