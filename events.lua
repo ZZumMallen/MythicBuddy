@@ -1,21 +1,26 @@
----@diagnostic disable:undefined-global
 MythicBuddyEvents = CreateFrame("Frame","MythicBuddy")
 MythicBuddyEvents.db = {}
 
--- @param fx function #called when fired
--- @param name string OPTIONAL name for function for ID purposes
 
-function MythicBuddyEvents:NewObject(fx, name)
+---comment create named object
+---@param func function # CreateFrame
+---@param name string
+---@return table
+function MythicBuddyEvents:NewObject(func, name)
     local obj = {}
     obj.name = name or 'anonymous'
-    obj.method = fx
+    obj.method = func
 
     return obj
 end
 
-function MythicBuddyEvents:Register(event, fx, name)
+---comment quick event reguster with local name and function
+---@param event string # 'EVENT_NAME'
+---@param func function #GetDungeonInfo
+---@param name any
+function MythicBuddyEvents:Register(event, func, name)
     if self:IsRegistered(event, name) then return end
-    local obj = self:NewObject(fx, name)
+    local obj = self:NewObject(func, name)
 
     if not self.db[event] then
         self.db[event] = {}
@@ -24,6 +29,10 @@ function MythicBuddyEvents:Register(event, fx, name)
     self.db[event][name] = obj
 end
 
+
+---comment unregistering event and  unique name
+---@param event string # 'EVENT_NAME'
+---@param name string
 function MythicBuddyEvents:UnRegister(event, name)
     local objs = self.db[event]
     if not objs then
@@ -37,6 +46,11 @@ function MythicBuddyEvents:UnRegister(event, name)
     end
 end
 
+
+---comment checks if registerd event is still registered
+---@param event string # 'EVENT_NAME'
+---@param name string
+---@return boolean
 function MythicBuddyEvents:IsRegistered(event, name)
     local objs = self.db[event]
     if not objs then return false end
@@ -48,8 +62,14 @@ function MythicBuddyEvents:IsRegistered(event, name)
     end
 end
 
+---comment
+---@param event string # 'EVENT_NAME'
+---@param handler any
+---@return unknown
 function MythicBuddyEvents:GetRegisteredFunction(event, handler)
     local objs = self.db[event]
+
+    ---@diagnostic disable-next-line
     if not objs then return end
 
     if objs[handler] then

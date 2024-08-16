@@ -6,10 +6,6 @@ local MB_FX = MythicBuddyFunctions
 local MB_FR = MythicBuddyFrames
 
 
-SLASH_MYBUDDY1 = "/myb"
----@diagnostic disable:undefined-global
-SlashCmdList["MYBUDDY"] = function() B.CreateBuddyWindow() end
-
 
 local function CheckAddonLoaded(arg1)
     if arg1 == "MythicBuddy" then
@@ -19,9 +15,7 @@ end
 MythicBuddyEvents:Register("ADDON_LOADED", CheckAddonLoaded, "CheckAddonLoaded")
 
 
-------------------------------------------------------------------------------------
---- Dungeon Checks
-------------------------------------------------------------------------------------
+--#region Dungeon Checks
 local Trigger = {}
 Trigger.old = 0
 Trigger.new = 0
@@ -38,13 +32,14 @@ function ZoneChanged()
     Trigger.old = 0
     Trigger.new = 0
 
-    if MB_FX:GetInst("In_Inst") == true and MB_FX:GetDungeonInfo("maxPlayers") == 5 and MB_FX:GetDungeonInfo("difficultyIndex") == 23 then
+    if MB_FX:InInstance("In_Inst") == true and MB_FX:GetDungeonInfo("maxPlayers") == 5 and MB_FX:GetDungeonInfo("INSTANCE_DIFF_ID") == 23 then
         CreateBuddy()
         return
     else
         return
     end
 end
+--#endregion
 
 MythicBuddyEvents:Register("UPDATE_INSTANCE_INFO", LoadBuffer, 'ZoneChanged')
 
@@ -58,58 +53,56 @@ function CreateBuddy()
         previousWindow = nil
     end
 
-    -- Create the initial frame
-    local window = MB_FR:CreateNewFrame("BuddyBackground", "InsetFrameTemplate3", "BOTTOMLEFT", ChatFrame1, "TOPLEFT", UIParent, 5, 40, 400, 200)
+
+    ---@class w: frame
+    local w = MB_FR:CreateNewFrame("BuddyBackground", "InsetFrameTemplate3", "BOTTOMLEFT", ChatFrame1, "TOPLEFT", UIParent, 5, 40, 400, 200)
 
     -----------------------------------------------------------------------------------------------------------
     -- Title Frame || Dunngeon ( dungeon difficulty )
     -----------------------------------------------------------------------------------------------------------
-    window.Title = MB_FR:AddFontString("dungeonTitle", window, "TOPLEFT", window, "TOPLEFT", 5, -5, "")
+    
+    w.Title = MB_FR:AddFontString("dungeonTitle", w, "TOPLEFT", w, "TOPLEFT", 5, -5, "")
     if MB_FX:GetDungeonInfo("INSTANCE_DIFF_NAME") == "Mythic" then
-        window.Title:SetText(MB_FX:GetDungeonInfo("INSTANCE_NAME") ..
+        w.Title:SetText(MB_FX:GetDungeonInfo("INSTANCE_NAME") ..
             " (" .. MB_FX:WhiteText(MB_FX:GetDungeonInfo("INSTANCE_DIFF_NAME")) .. ")")
     else
-        window.Title:SetText(MB_FX:GetDungeonInfo("INSTANCE_NAME") ..
+        w.Title:SetText(MB_FX:GetDungeonInfo("INSTANCE_NAME") ..
             " (" .. MB_FX:RedText(MB_FX:GetDungeonInfo("INSTANCE_DIFF_NAME")) .. ")")
     end
-    window.Title:SetFontObject("GameFontNormalLarge")
-    window.Title:SetScale(1.5)
+    w.Title:SetFontObject("GameFontNormalLarge")
+    w.Title:SetScale(1.5)
 
-    -----------------------------------------------------------------------------------------------------------
-    -- Current Keystone : Keystone
-    -----------------------------------------------------------------------------------------------------------
-    window.MyKeystoneInfo = MB_FR:AddFontString("MyKeyLvl", window, "TOPLEFT", window.Title, "BOTTOMLEFT", 0, -5, nil)
-    window.MyKeystoneInfo:SetText("Current Keystone: " .. MB_FX:WhiteText(MB_FX.MyKeystone(self)) .. MB_FX:WhiteText(MB_FX:MyKeyLvl()))
 
-    -----------------------------------------------------------------------------------------------------------
-    -- Affix 1 Group
-    -----------------------------------------------------------------------------------------------------------
-    window.affix_container_1 = MB_FR:CreateNewFrame("affix_container_1", window, "TOPLEFT", window.MyKeystoneInfo,
-        "BOTTOMLEFT", window, 0, -10, 400, 20)
-    window.affix_icon_1 = MB_FR:AddIcon(window.affix_container_1, "LEFT", MB_FX:MyAffIcon("AFFIX1"), 20, 20)
-    window.affix_string_1 = MB_FR:AddFontString("AFFIX1", window, "LEFT", window.affix_icon_2, "RIGHT", 5, 0,
-        MB_FX:WhiteText(MB_FX:MyAffixes("AFFIX1")))
+    w.MyKeystoneInfo = MB_FR:AddFontString("MyKeyLvl", w, "TOPLEFT", w.Title, "BOTTOMLEFT", 0, -5, nil)
+    w.MyKeystoneInfo:SetText("Current Keystone: " .. MB_FX:WhiteText(MB_FX.MyKeystone()) .. MB_FX:WhiteText(MB_FX:MyKeyLevel()))
 
-    -----------------------------------------------------------------------------------------------------------
-    -- Affix 2 Group
-    -----------------------------------------------------------------------------------------------------------
-    window.affix_container_2 = MB_FR:CreateNewFrame("affix_container_2", window, "TOPLEFT", window.affix_container_1, "BOTTOMLEFT", window, 0, -10, 400, 20)
-    window.affix_icon_2 = MB_FR:AddIcon(window.affix_container_2, "LEFT", MB_FX:MyAffIcon("AFFIX2"), 20, 20)
-    window.a2str = MB_FR:AddFontString("AFFIX2", window, "LEFT", window.affix_icon_2, "RIGHT", 5, 0,
-        MB_FX:WhiteText(MB_FX:MyAffixes("AFFIX2")))
+    --#region Affix Functions
+    --affix1----------------------------------------------------------------------------------------------------------------------------
+    w.affix_container_1 = MB_FR:CreateNewFrame("affix_container_1", "", "TOPLEFT", w.MyKeystoneInfo,
+        "BOTTOMLEFT", w, 0, -10, 400, 20)
+    w.affix_icon_1 = MB_FR:AddIcon(w.affix_container_1, "LEFT", MB_FX:MyAffIcon("AFFIX1"), 20, 20)
+    w.affix_string_1 = MB_FR:AddFontString("AFFIX1", w, "LEFT", w.affix_icon_1, "RIGHT", 5, 0,
+        MB_FX:WhiteText(MB_FX:CurrentAffixes("AFFIX1")))
+   
 
-    -----------------------------------------------------------------------------------------------------------
-    -- Affix 3 Group
-    -----------------------------------------------------------------------------------------------------------
-    window.a3cont = MB_FR:CreateNewFrame("affix_container_3", window, "TOPLEFT", window.affix_container_2, "BOTTOMLEFT", window, 0, -10,
+    --affix 2----------------------------------------------------------------------------------------------------------------------------
+    w.affix_container_2 = MB_FR:CreateNewFrame("affix_container_2", "", "TOPLEFT", w.affix_container_1, "BOTTOMLEFT", w, 0, -10, 400, 20)
+    w.affix_icon_2 = MB_FR:AddIcon(w.affix_container_2, "LEFT", MB_FX:MyAffIcon("AFFIX2"), 20, 20)
+    w.affix_string_2 = MB_FR:AddFontString("AFFIX2", w, "LEFT", w.affix_icon_2, "RIGHT", 5, 0,
+        MB_FX:WhiteText(MB_FX:CurrentAffixes("AFFIX2")))
+ 
+
+    --affix 3----------------------------------------------------------------------------------------------------------------------------
+    w.affix_container_3 = MB_FR:CreateNewFrame("affix_container_3", "", "TOPLEFT", w.affix_container_2, "BOTTOMLEFT", w, 0, -10,
         400, 20)
-    window.a3icon = MB_FR:AddIcon(window.a3cont, "LEFT", MB_FX:MyAffIcon("AFFIX3"), 20, 20)
-    window.a3str = MB_FR:AddFontString("AFFIX3", window, "LEFT", window.a3icon, "RIGHT", 5, 0,
-        MB_FX:WhiteText(MB_FX:MyAffixes("AFFIX3")))
+    w.affix_icon_3 = MB_FR:AddIcon(w.affix_container_3, "LEFT", MB_FX:MyAffIcon("AFFIX3"), 20, 20)
+    w.affix_string_3 = MB_FR:AddFontString("AFFIX3", w, "LEFT", w.affix_icon_3, "RIGHT", 5, 0,
+        MB_FX:WhiteText(MB_FX:CurrentAffixes("AFFIX3")))
+    --#endregion
 
-    window:Show()
+    w:Show()
 
-    previousWindow = window
+    previousWindow = w
     return previousWindow
 end
 

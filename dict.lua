@@ -1,13 +1,16 @@
 local _, addon = ...
+
+---@class D
 local D = addon.L
 
 
---D.currentDungeon
+---@class mythicDungeonByID: D
+---@type table<number, string>
 D.mythicDungeonByID = {
     --Cataclysm
     [568] = "Zul'Aman",
     [643] = "Throne of the Tides",
-    [644] = "Halls of Origination",---@c
+    [644] = "Halls of Origination",
     [645] = "Blackrock Caverns",
     [657] = "The Vortex Pinnacle",
     [670] = "Grim Batol",
@@ -192,18 +195,19 @@ local DiffId_Name = {
     [192] = "Challenge Level 1",
 }
 
--- local ClassColorName_Hex = {
---     ["Warrior"] = "C79C6E",
---     ["Paladin"] = "F58CBA",
---     ["Hunter"] = "ABD473",
---     ["Rogue"] = "FFF569",
---     ["Priest"] = "FFFFFF",
---     ["Death knight"] = "C79C6E",
---     ["Shaman"] = "C79C6E",
---     ["Mage"] = "40C7EB",
---     ["Warlock"] = "8787ED",
---     ["Monk"] = "C79C6E",
---     ["Druid"] = "FF7D0A",
---     ["Demon Hunter"] = "C79C6E",
---     ["Evoker"] = "C79C6E",
--- }
+
+D.ClassColorName_Hex = {
+    ["Warrior"] = "C79C6E",
+    ["Paladin"] = "F58CBA",
+    ["Hunter"] = "ABD473",
+    ["Rogue"] = "FFF569",
+    ["Priest"] = "FFFFFF",
+    ["Death knight"] = "C79C6E",
+    ["Shaman"] = "C79C6E",
+    ["Mage"] = "40C7EB",
+    ["Warlock"] = "8787ED",
+    ["Monk"] = "C79C6E",
+    ["Druid"] = "FF7D0A",
+    ["Demon Hunter"] = "C79C6E",
+    ["Evoker"] = "C79C6E",
+}

@@ -5,22 +5,22 @@ local addonName, addon = ...
 local FX = addon.L
 
 ---@class MythicBuddyFunctions
----@field MyAffixes function
+---@field CurrentAffixes function
 ---@field AddFontString function
 MythicBuddyFunctions = {}
 
-------------------------------------------------------------------------
---Frames
-------------------------------------------------------------------------
----@diagnostic disable:undefined-global
+
+---comment
+---@param infoType string
+---@return (boolean|string|number)?
 function MythicBuddyFunctions:GetDungeonInfo(infoType)
     local name, typeID, difficultyIndex, difficultyName, maxPlayers,
     dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo()
     local infoTable = {
         ["INSTANCE_NAME"] = name,
         ["typeID"] = typeID,
-        ["INSTANCE_DIFF_NAME"] = difficultyIndex,
-        ["difficultyName"] = difficultyName,
+        ["INSTANCE_DIFF_ID"] = difficultyIndex,
+        ["INSTANCE_DIFF_NAME"] = difficultyName,
         ["maxPlayers"] = maxPlayers,
         ["dynamicDifficulty"] = dynamicDifficulty,
         ["isDynamic"] = isDynamic,
@@ -30,7 +30,10 @@ function MythicBuddyFunctions:GetDungeonInfo(infoType)
     return infoTable[infoType]
 end
 
-function MythicBuddyFunctions:GetInst(type)
+---comment in_inst is boolean, inst_type string
+---@param type string
+---@return boolean|string
+function MythicBuddyFunctions:InInstance(type)
     local inInstance, instanceType = IsInInstance()
     local t = {
         ["In_Inst"] = inInstance,
@@ -39,8 +42,9 @@ function MythicBuddyFunctions:GetInst(type)
     return t[type]
 end
 
-
-function MythicBuddyFunctions:MyKeyLvl()
+---comment returns my key level
+---@return any
+function MythicBuddyFunctions:MyKeyLevel()
     local keyStoneLevel = C_MythicPlus.GetOwnedKeystoneLevel()
     if keyStoneLevel == nil then
         return ""
@@ -50,21 +54,21 @@ function MythicBuddyFunctions:MyKeyLvl()
     end
 end
 
-
-function MythicBuddyFunctions:MyKeystone()
+---comment name of the keystone as a string
+function MythicBuddyFunctions.MyKeystone()
     local mapID = C_MythicPlus.GetOwnedKeystoneMapID()
     if mapID == nil then
         return "|cfffc2003Not Found|r"
     else
+        ---@alias k string
         local k = FX.mythicDungeonByID[mapID]
         return k
     end
 end
 
--- 10, 124, 11 | fort, storming, bursting
-
+---comment returns the affix as a name || string
 ---@param affixNum string #"'affix1', 'affix2', 'affix3'""
-function MythicBuddyFunctions:MyAffixes(affixNum)
+function MythicBuddyFunctions:CurrentAffixes(affixNum)
     local affix = C_MythicPlus.GetCurrentAffixes()
     local name = FX.AFFIX_id_name_desc
     local affixTable = {
@@ -72,8 +76,6 @@ function MythicBuddyFunctions:MyAffixes(affixNum)
         ["AFFIX2"] = name[affix[2].id][1],
         ["AFFIX3"] = name[affix[3].id][1]
     }
-
-    
         return affixTable[affixNum]
     end
 
@@ -86,7 +88,6 @@ function MythicBuddyFunctions:MyAffTooltip(affixNum)
         ["AFFIX2"] = name[affix[2].id][2],
         ["AFFIX3"] = name[affix[3].id][2]
     }
-    
         return affixTable[affixNum]
     end
 
@@ -99,7 +100,6 @@ function MythicBuddyFunctions:MyAffIcon(affixNum)
         ["AFFIX2"] = name[affix[2].id][3],
         ["AFFIX3"] = name[affix[3].id][3]
     }
-    
         return affixTable[affixNum]
     end
 
