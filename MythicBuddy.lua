@@ -6,6 +6,12 @@ local MB_FX = MythicBuddyFunctions
 local MB_FR = MythicBuddyFrames
 
 
+SLASH_RELOADUI1 = "/rl"
+SlashCmdList.RELOADUI = ReloadUI
+
+SLASH_MYTHICBUDDY1 = "/bff"
+SlashCmdList.MYTHICBUDDY = function() Troubleshooting() end;
+
 
 local function CheckAddonLoaded(arg1)
     if arg1 == "MythicBuddy" then
@@ -44,6 +50,7 @@ end
 MythicBuddyEvents:Register("UPDATE_INSTANCE_INFO", LoadBuffer, 'ZoneChanged')
 
 local previousWindow
+local previousTooltip
 
 
 function CreateBuddy()
@@ -60,7 +67,7 @@ function CreateBuddy()
     -----------------------------------------------------------------------------------------------------------
     -- Title Frame || Dunngeon ( dungeon difficulty )
     -----------------------------------------------------------------------------------------------------------
-    
+
     w.Title = MB_FR:AddFontString("dungeonTitle", w, "TOPLEFT", w, "TOPLEFT", 5, -5, "")
     if MB_FX:GetDungeonInfo("INSTANCE_DIFF_NAME") == "Mythic" then
         w.Title:SetText(MB_FX:GetDungeonInfo("INSTANCE_NAME") ..
@@ -77,27 +84,27 @@ function CreateBuddy()
     w.MyKeystoneInfo:SetText("Current Keystone: " .. MB_FX:WhiteText(MB_FX.MyKeystone()) .. MB_FX:WhiteText(MB_FX:MyKeyLevel()))
 
     --#region Affix Functions
-    --affix1----------------------------------------------------------------------------------------------------------------------------
+    --affix1-----------------
     w.affix_container_1 = MB_FR:CreateNewFrame("affix_container_1", "", "TOPLEFT", w.MyKeystoneInfo,
         "BOTTOMLEFT", w, 0, -10, 400, 20)
     w.affix_icon_1 = MB_FR:AddIcon(w.affix_container_1, "LEFT", MB_FX:MyAffIcon("AFFIX1"), 20, 20)
     w.affix_string_1 = MB_FR:AddFontString("AFFIX1", w, "LEFT", w.affix_icon_1, "RIGHT", 5, 0,
         MB_FX:WhiteText(MB_FX:CurrentAffixes("AFFIX1")))
-   
+    w.affix_string_1:SetScript("OnEnter", function() DisplayTooltip(MB_FX:MyAffTooltip("AFFIX1")) end)
 
-    --affix 2----------------------------------------------------------------------------------------------------------------------------
+    --affix 2---------------
     w.affix_container_2 = MB_FR:CreateNewFrame("affix_container_2", "", "TOPLEFT", w.affix_container_1, "BOTTOMLEFT", w, 0, -10, 400, 20)
     w.affix_icon_2 = MB_FR:AddIcon(w.affix_container_2, "LEFT", MB_FX:MyAffIcon("AFFIX2"), 20, 20)
     w.affix_string_2 = MB_FR:AddFontString("AFFIX2", w, "LEFT", w.affix_icon_2, "RIGHT", 5, 0,
         MB_FX:WhiteText(MB_FX:CurrentAffixes("AFFIX2")))
- 
+    w.affix_string_2:SetScript("OnEnter", function() DisplayTooltip(MB_FX:MyAffTooltip("AFFIX2")) end)
 
-    --affix 3----------------------------------------------------------------------------------------------------------------------------
-    w.affix_container_3 = MB_FR:CreateNewFrame("affix_container_3", "", "TOPLEFT", w.affix_container_2, "BOTTOMLEFT", w, 0, -10,
-        400, 20)
+    --affix 3---------------
+    w.affix_container_3 = MB_FR:CreateNewFrame("affix_container_3", "", "TOPLEFT", w.affix_container_2, "BOTTOMLEFT", w, 0, -10, 400, 20)
     w.affix_icon_3 = MB_FR:AddIcon(w.affix_container_3, "LEFT", MB_FX:MyAffIcon("AFFIX3"), 20, 20)
     w.affix_string_3 = MB_FR:AddFontString("AFFIX3", w, "LEFT", w.affix_icon_3, "RIGHT", 5, 0,
         MB_FX:WhiteText(MB_FX:CurrentAffixes("AFFIX3")))
+    w.affix_string_3:SetScript("OnEnter", function() DisplayTooltip(MB_FX:MyAffTooltip("AFFIX3")) end)
     --#endregion
 
     w:Show()
@@ -105,6 +112,32 @@ function CreateBuddy()
     previousWindow = w
     return previousWindow
 end
+
+---comment it makes the tooltips appear or else it gets the hose again
+---
+---@param text string
+---@return Frame
+function DisplayTooltip(text)
+
+    if previousTooltip then
+        previousTooltip:Hide()
+        previousTooltip = nil
+    end
+
+    ---@class ttw: frame
+    local ttw = MB_FR:CreateNewFrame("AboveFrameTooltip","InsetFrameTemplate3","BOTTOMLEFT", previousWindow,"TOPLEFT", previousWindow, 0, 10, 400, 70)
+        ttw:SetScript("onMouseDown", function() ttw:Hide() end)
+        ttw.tooltip_string = MB_FR:AddFontString("AboveWindowTooltip", ttw, 'TOPLEFT', ttw, "TOPLEFT", 8, -5, text)
+        ttw.tooltip_string:SetWordWrap(true)
+        ttw.tooltip_string:SetSize(385, 55)
+        ttw.tooltip_string:SetJustifyH("LEFT")
+        ttw.tooltip_string:SetJustifyV("TOP")
+        ttw.tooltip_string:SetFontObject("Game13Font")
+
+        previousTooltip = ttw
+    return previousTooltip
+end
+
 
 function HideOnLeavingWorld()
     if previousWindow then
@@ -129,3 +162,6 @@ end
 MythicBuddyEvents:Register("CHALLENGE_MODE_START", HideOnDungeonStart, 'HideOnLeavingWorld')
 
 
+function Troubleshooting()
+    CreateBuddy()
+end

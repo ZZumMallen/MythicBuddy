@@ -86,7 +86,8 @@ function MythicBuddyFunctions:MyAffTooltip(affixNum)
     local affixTable = {
         ["AFFIX1"] = name[affix[1].id][2],
         ["AFFIX2"] = name[affix[2].id][2],
-        ["AFFIX3"] = name[affix[3].id][2]
+        ["AFFIX3"] = name[affix[3].id][2],
+        ["AFFIX9"] = FX.AFFIX_id_name_desc[120][2] -- longest string for testing
     }
         return affixTable[affixNum]
     end
