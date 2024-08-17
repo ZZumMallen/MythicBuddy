@@ -12,6 +12,7 @@ SlashCmdList.RELOADUI = ReloadUI
 SLASH_MYTHICBUDDY1 = "/bff"
 SlashCmdList.MYTHICBUDDY = function() Troubleshooting() end;
 
+local w
 
 local function CheckAddonLoaded(arg1)
     if arg1 == "MythicBuddy" then
@@ -21,60 +22,36 @@ end
 MythicBuddyEvents:Register("ADDON_LOADED", CheckAddonLoaded, "CheckAddonLoaded")
 
 
---#region Dungeon Checks
-local Trigger = {}
-Trigger.old = 0
-Trigger.new = 0
-
--- function LoadBuffer()
---     Trigger.new = Trigger.new + 1
---     if Trigger.new == 1 then
---         ZoneChanged()
---         return
---     end
--- end
-
 function ZoneChanged()
-    print("zone changed function ran")
-    print(MB_FX:InInstance("In_Inst"))
-    print(MB_FX:InInstance("Inst_Type"))
-
-    Trigger.old = 0
-    Trigger.new = 0
-
     if MB_FX:InInstance("In_Inst") == true and MB_FX:InInstance("Inst_Type") == 'party' then
-        print("creating a buddy")
         CreateBuddy()
-        return
-    else
         return
     end
 end
---#endregion
 
-MythicBuddyEvents:Register("UPDATE_INSTANCE_INFO", ZoneChanged, 'ZoneChanged')
+
+MB_EV:Register("UPDATE_INSTANCE_INFO", ZoneChanged, 'ZoneChanged')
 
 local previousWindow
 local previousTooltip
 
 
 function CreateBuddy()
-    -- Removes the old window if a new one is created
+
     if previousWindow then
         previousWindow:Hide()
         previousWindow = nil
     end
 
-
     ---@class w: frame
-    local w = MB_FR:CreateNewFrame("BuddyBackground", "InsetFrameTemplate3", "BOTTOMLEFT", ChatFrame1, "TOPLEFT", UIParent, 5, 40, 400, 200)
+    w = MB_FR:CreateNewFrame("BuddyBackground", "InsetFrameTemplate3", "BOTTOMLEFT", ChatFrame1, "TOPLEFT", UIParent, 5, 40, 400, 200)
 
     -----------------------------------------------------------------------------------------------------------
     -- Title Frame || Dunngeon ( dungeon difficulty )
     -----------------------------------------------------------------------------------------------------------
 
     w.Title = MB_FR:AddFontString("dungeonTitle", w, "TOPLEFT", w, "TOPLEFT", 5, -5, "")
-    if MB_FX:GetDungeonInfo("INSTANCE_DIFF_NAME") == "Mythic Keystone" then
+    if MB_FX:GetDungeonInfo("INSTANCE_DIFF_NAME") == "Mythic" then
         w.Title:SetText(MB_FX:GetDungeonInfo("INSTANCE_NAME") ..
             " (" .. MB_FX:WhiteText(MB_FX:GetDungeonInfo("INSTANCE_DIFF_NAME")) .. ")")
     else
@@ -115,7 +92,7 @@ function CreateBuddy()
     w:Show()
 
     previousWindow = w
-    return previousWindow
+    return previousWindow, w
 end
 
 ---comment it makes the tooltips appear or else it gets the hose again
@@ -146,25 +123,17 @@ end
 
 function HideOnLeavingWorld()
     if previousWindow then
-        print("found f, leaving world")
         previousWindow:Hide()
         return
-    else
-        print("f not found")
-        return
     end
-
 end
-MythicBuddyEvents:Register("PLAYER_LEAVING_WORLD", HideOnLeavingWorld, 'HideOnLeavingWorld')
+
+MB_EV:Register("PLAYER_LEAVING_WORLD", HideOnLeavingWorld, "HideOnLeavingWorld")
 
 function HideOnDungeonStart()
-    if previousWindow then
-        C_Timer.After(3, function ()
-            previousWindow.Hide()
-        end)
-    end
+    w:Hide()
 end
-MythicBuddyEvents:Register("CHALLENGE_MODE_START", HideOnDungeonStart, 'HideOnLeavingWorld')
+MB_EV:Register("CHALLENGE_MODE_START", HideOnDungeonStart, "HideOnDungeonStart")
 
 
 function Troubleshooting()
