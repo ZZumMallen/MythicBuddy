@@ -4,8 +4,7 @@ local _, addon = ...
 local D = addon.L
 
 
----@class mythicDungeonByID: D
----@type table<number, string>
+
 D.mythicDungeonByID = {
     --Cataclysm
     [568] = "Zul'Aman",

@@ -26,19 +26,24 @@ local Trigger = {}
 Trigger.old = 0
 Trigger.new = 0
 
-function LoadBuffer()
-    Trigger.new = Trigger.new + 1
-    if Trigger.new == 3 then
-        ZoneChanged()
-        return
-    end
-end
+-- function LoadBuffer()
+--     Trigger.new = Trigger.new + 1
+--     if Trigger.new == 1 then
+--         ZoneChanged()
+--         return
+--     end
+-- end
 
 function ZoneChanged()
+    print("zone changed function ran")
+    print(MB_FX:InInstance("In_Inst"))
+    print(MB_FX:InInstance("Inst_Type"))
+
     Trigger.old = 0
     Trigger.new = 0
 
-    if MB_FX:InInstance("In_Inst") == true and MB_FX:GetDungeonInfo("maxPlayers") == 5 and MB_FX:GetDungeonInfo("INSTANCE_DIFF_ID") == 23 then
+    if MB_FX:InInstance("In_Inst") == true and MB_FX:InInstance("Inst_Type") == 'party' then
+        print("creating a buddy")
         CreateBuddy()
         return
     else
@@ -47,7 +52,7 @@ function ZoneChanged()
 end
 --#endregion
 
-MythicBuddyEvents:Register("UPDATE_INSTANCE_INFO", LoadBuffer, 'ZoneChanged')
+MythicBuddyEvents:Register("UPDATE_INSTANCE_INFO", ZoneChanged, 'ZoneChanged')
 
 local previousWindow
 local previousTooltip
@@ -69,7 +74,7 @@ function CreateBuddy()
     -----------------------------------------------------------------------------------------------------------
 
     w.Title = MB_FR:AddFontString("dungeonTitle", w, "TOPLEFT", w, "TOPLEFT", 5, -5, "")
-    if MB_FX:GetDungeonInfo("INSTANCE_DIFF_NAME") == "Mythic" then
+    if MB_FX:GetDungeonInfo("INSTANCE_DIFF_NAME") == "Mythic Keystone" then
         w.Title:SetText(MB_FX:GetDungeonInfo("INSTANCE_NAME") ..
             " (" .. MB_FX:WhiteText(MB_FX:GetDungeonInfo("INSTANCE_DIFF_NAME")) .. ")")
     else
@@ -154,7 +159,7 @@ MythicBuddyEvents:Register("PLAYER_LEAVING_WORLD", HideOnLeavingWorld, 'HideOnLe
 
 function HideOnDungeonStart()
     if previousWindow then
-        C_Timers.After(3, function ()
+        C_Timer.After(3, function ()
             previousWindow.Hide()
         end)
     end
