@@ -12,14 +12,14 @@ SlashCmdList.RELOADUI = ReloadUI
 SLASH_MYTHICBUDDY1 = "/bff"
 SlashCmdList.MYTHICBUDDY = function() Troubleshooting() end;
 
-local w
-
 local function CheckAddonLoaded(arg1)
     if arg1 == "MythicBuddy" then
         local a=0
     end
 end
+
 MythicBuddyEvents:Register("ADDON_LOADED", CheckAddonLoaded, "CheckAddonLoaded")
+
 
 
 function ZoneChanged()
@@ -29,12 +29,11 @@ function ZoneChanged()
     end
 end
 
-
 MB_EV:Register("UPDATE_INSTANCE_INFO", ZoneChanged, 'ZoneChanged')
 
 local previousWindow
 local previousTooltip
-
+local w
 
 function CreateBuddy()
 
@@ -44,7 +43,8 @@ function CreateBuddy()
     end
 
     ---@class w: frame
-    w = MB_FR:CreateNewFrame("BuddyBackground", "InsetFrameTemplate3", "BOTTOMLEFT", ChatFrame1, "TOPLEFT", UIParent, 5, 40, 400, 200)
+    w = MB_FR:CreateNewFrame("BuddyBackground", "InsetFrameTemplate3", "BOTTOMLEFT", ChatFrame1, "TOPLEFT", UIParent, 5,
+        40, 400, 200)
 
     -----------------------------------------------------------------------------------------------------------
     -- Title Frame || Dunngeon ( dungeon difficulty )
@@ -64,6 +64,12 @@ function CreateBuddy()
 
     w.MyKeystoneInfo = MB_FR:AddFontString("MyKeyLvl", w, "TOPLEFT", w.Title, "BOTTOMLEFT", 0, -5, nil)
     w.MyKeystoneInfo:SetText("Current Keystone: " .. MB_FX:WhiteText(MB_FX.MyKeystone()) .. MB_FX:WhiteText(MB_FX:MyKeyLevel()))
+
+    if MB_FX:CanUseMyKey() then
+        w.Glow = MB_FR:CreateNewFrame("BuddyBackgroundGlow", "GlowBorderTemplate", "TOPLEFT", w, "TOPLEFT", w, 0,
+        0, 400, 200)
+
+    end
 
     --#region Affix Functions
     --affix1-----------------
@@ -91,12 +97,15 @@ function CreateBuddy()
 
     w:Show()
 
+
     previousWindow = w
     return previousWindow, w
 end
 
+
+
+
 ---comment it makes the tooltips appear or else it gets the hose again
----
 ---@param text string
 ---@return Frame
 function DisplayTooltip(text)
@@ -133,6 +142,7 @@ MB_EV:Register("PLAYER_LEAVING_WORLD", HideOnLeavingWorld, "HideOnLeavingWorld")
 function HideOnDungeonStart()
     w:Hide()
 end
+
 MB_EV:Register("CHALLENGE_MODE_START", HideOnDungeonStart, "HideOnDungeonStart")
 
 

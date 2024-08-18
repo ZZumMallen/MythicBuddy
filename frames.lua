@@ -54,4 +54,14 @@ function MythicBuddyFrames:AddIcon(UIParent, point, textureID, width, height)
 	return tex
 end
 
+
+-- function MythicBuddyFrames:AddPlayerModel(modelID)
+-- 	local model = CreateFrame("PlayerModel", nil, UIParent)
+-- end
+
+-- local m = CreateFrame("PlayerModel", nil, UIParent)
+-- m:SetPoint("CENTER")
+-- m:SetSize(256, 256)
+-- m:SetDisplayInfo(21723)
+
 -- /run ChatFrame1:Clear()

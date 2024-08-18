@@ -112,7 +112,25 @@ function MythicBuddyFunctions:WhiteText(text)
     return w
 end
 
+
+---@return string
 function MythicBuddyFunctions:RedText(text)
     local w = "|cffff0000" .. text .. "|r"
     return w
 end
+
+---comment tests if the players current key is for the dungeon they are in
+---@return boolean
+function MythicBuddyFunctions:CanUseMyKey()
+    local currentMapID = strsplit(",", select(8, GetInstanceInfo()))
+    local currentSelfKeystoneNameID = C_MythicPlus.GetOwnedKeystoneMapID()
+
+    if tonumber(currentSelfKeystoneNameID) == tonumber(currentMapID) then
+        return true
+    else
+        print(currentSelfKeystoneNameID)
+        print(currentMapID)
+        return false
+    end
+end
+
