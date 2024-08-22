@@ -1,10 +1,11 @@
-local _, addon = ...
+local ADDON_NAME, addon = ...
 local B = addon.L
 
 local MB_EV = MythicBuddyEvents
 local MB_FX = MythicBuddyFunctions
 local MB_FR = MythicBuddyFrames
 
+ZONE_CHANGE_COUNTER = 0 or {}
 
 SLASH_RELOADUI1 = "/rl"
 SlashCmdList.RELOADUI = ReloadUI
@@ -14,18 +15,18 @@ SlashCmdList.MYTHICBUDDY = function() Troubleshooting() end;
 
 local function CheckAddonLoaded(arg1)
     if arg1 == "MythicBuddy" then
-        local a=0
+        print("MythicBuddy Loaded")
     end
 end
 
 MythicBuddyEvents:Register("ADDON_LOADED", CheckAddonLoaded, "CheckAddonLoaded")
 
-
-
 function ZoneChanged()
     if MB_FX:InInstance("In_Inst") == true and MB_FX:InInstance("Inst_Type") == 'party' then
-        CreateBuddy()
-        return
+        ZONE_CHANGE_COUNTER = ZONE_CHANGE_COUNTER + 1
+        if ZONE_CHANGE_COUNTER == 1 then
+            CreateBuddy()
+        else return end
     end
 end
 
@@ -39,6 +40,7 @@ function CreateBuddy()
 
     if previousWindow then
         previousWindow:Hide()
+        w.Glow:Hide()
         previousWindow = nil
     end
 
@@ -68,6 +70,8 @@ function CreateBuddy()
     if MB_FX:CanUseMyKey() then
         w.Glow = MB_FR:CreateNewFrame("BuddyBackgroundGlow", "GlowBorderTemplate", "TOPLEFT", w, "TOPLEFT", w, 0,
         0, 400, 200)
+    else
+        return
 
     end
 
@@ -96,7 +100,6 @@ function CreateBuddy()
     --#endregion
 
     w:Show()
-
 
     previousWindow = w
     return previousWindow, w
@@ -133,6 +136,7 @@ end
 function HideOnLeavingWorld()
     if previousWindow then
         previousWindow:Hide()
+        ResetZoneChangeCounter()
         return
     end
 end
@@ -140,10 +144,15 @@ end
 MB_EV:Register("PLAYER_LEAVING_WORLD", HideOnLeavingWorld, "HideOnLeavingWorld")
 
 function HideOnDungeonStart()
+    ResetZoneChangeCounter()
     w:Hide()
 end
 
 MB_EV:Register("CHALLENGE_MODE_START", HideOnDungeonStart, "HideOnDungeonStart")
+
+function ResetZoneChangeCounter()
+    ZONE_CHANGE_COUNTER = {}
+end
 
 
 function Troubleshooting()

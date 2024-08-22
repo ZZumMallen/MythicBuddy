@@ -1,7 +1,7 @@
-local addonName, addon = ...
+local ADDON_NAME, addon = ...
 ---@class FX
 ---@field mythicDungeonByID table
----@field AFFIX_id_name_desc function
+---@field AffixInfo function
 local FX = addon.L
 
 ---@class MythicBuddyFunctions
@@ -70,7 +70,7 @@ end
 ---@param affixNum string #"'affix1', 'affix2', 'affix3'""
 function MythicBuddyFunctions:CurrentAffixes(affixNum)
     local affix = C_MythicPlus.GetCurrentAffixes()
-    local name = FX.AFFIX_id_name_desc
+    local name = FX.AffixInfo
     local affixTable = {
         ["AFFIX1"] = name[affix[1].id][1],
         ["AFFIX2"] = name[affix[2].id][1],
@@ -82,12 +82,12 @@ function MythicBuddyFunctions:CurrentAffixes(affixNum)
 
 function MythicBuddyFunctions:MyAffTooltip(affixNum)
     local affix = C_MythicPlus.GetCurrentAffixes()
-    local name = FX.AFFIX_id_name_desc
+    local name = FX.AffixInfo
     local affixTable = {
         ["AFFIX1"] = name[affix[1].id][2],
         ["AFFIX2"] = name[affix[2].id][2],
         ["AFFIX3"] = name[affix[3].id][2],
-        ["AFFIX9"] = FX.AFFIX_id_name_desc[120][2] -- longest string for testing
+        ["AFFIX9"] = FX.AffixInfo[120][2] -- longest string for testing
     }
         return affixTable[affixNum]
     end
@@ -95,7 +95,7 @@ function MythicBuddyFunctions:MyAffTooltip(affixNum)
 
 function MythicBuddyFunctions:MyAffIcon(affixNum)
     local affix = C_MythicPlus.GetCurrentAffixes()
-    local name = FX.AFFIX_id_name_desc
+    local name = FX.AffixInfo
     local affixTable = {
         ["AFFIX1"] = name[affix[1].id][3],
         ["AFFIX2"] = name[affix[2].id][3],
