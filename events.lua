@@ -65,12 +65,15 @@ end
 ---comment
 ---@param event string # 'EVENT_NAME'
 ---@param handler any
----@return unknown
+---@return any
 function MythicBuddyEvents:GetRegisteredFunction(event, handler)
     local objs = self.db[event]
 
-    ---@diagnostic disable-next-line
-    if not objs then return end
+    if not objs then
+        return
+    end
+
+    
 
     if objs[handler] then
         return objs[handler].method

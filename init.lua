@@ -1,6 +1,6 @@
-local ADDON_NAME, addon = ...
--- _G["MythicBuddy"] = addon
-addon.L = {}
+local _, addon = ...
+_G["MythicBuddy"] = addon
+
 
 
 

@@ -1,18 +1,18 @@
-MythicBuddyFrames = {}
---
+---@class MythicBuddyFrames
+MythicBuddyFrames = {}--
 
 ---comment Create a new frame with a unique namespace
 ---@param name string for fstack id
----@param template any
+---@param template Template
 ---@param selfpoint string new object - where we are anchored
----@param obj any object - what whe are anchoring to
----@param objPoint string  object - where on the object  
----@param selfParent Frame|fontstring|
+---@param obj Frame
+---@param objPoint FramePoint
+---@param selfParent FramePoint
 ---@param xoffset number x offset in pixels, positive is right
 ---@param yOffsett number y offset in pixels, poitive is down
 ---@param width number width in pixels
 ---@param height number height in pixels
----@return Frame # pseudo-method 
+---@return any# pseudo-method 
 function MythicBuddyFrames:CreateNewFrame(name, template, selfpoint, obj, objPoint, selfParent, xoffset, yOffsett, width, height)
 	local frame = CreateFrame("frame", name, selfParent, template)
 	frame:SetPoint(selfpoint, obj, objPoint, xoffset, yOffsett)
@@ -55,13 +55,3 @@ function MythicBuddyFrames:AddIcon(UIParent, point, textureID, width, height)
 end
 
 
--- function MythicBuddyFrames:AddPlayerModel(modelID)
--- 	local model = CreateFrame("PlayerModel", nil, UIParent)
--- end
-
--- local m = CreateFrame("PlayerModel", nil, UIParent)
--- m:SetPoint("CENTER")
--- m:SetSize(256, 256)
--- m:SetDisplayInfo(21723)
-
--- /run ChatFrame1:Clear()
