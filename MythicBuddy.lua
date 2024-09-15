@@ -1,36 +1,47 @@
-local ADDON_NAME, addon = ...
-local B = addon.L
+local _, MBD = ...
 
 local MB_EV = MythicBuddyEvents
 local MB_FX = MythicBuddyFunctions
 local MB_FR = MythicBuddyFrames
 
-ZONE_CHANGE_COUNTER = 0 or {}
+MBD.DEBUG = true
 
 SLASH_RELOADUI1 = "/rl"
 SlashCmdList.RELOADUI = ReloadUI
 
 SLASH_MYTHICBUDDY1 = "/bff"
-SlashCmdList.MYTHICBUDDY = function() Troubleshooting() end;
+SlashCmdList.MYTHICBUDDY = function() print("troubleshooting") end;
 
-local function CheckAddonLoaded(arg1)
-    if arg1 == "MythicBuddy" then
-        print("MythicBuddy Loaded")
+
+
+local eventFrame
+do
+    eventFrame = CreateFrame("Frame")
+    eventFrame:RegisterEvent("ADDON_LOADED")
+    eventFrame:RegisterEvent("UPDATE_INSTANCE_INFO")
+    eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+    eventFrame:SetScript("OnEvent", function(self, event, ...)
+        return MBD[event](self, ...)
+    end)
+
+    function MBD.ADDON_LOADED(self, addon)
+        if addon == "MythicBuddy" then
+            if MBD.DEBUG then
+            print("MBD:Loaded")
+            end
+            --invoke DBs
+            eventFrame:UnregisterEvent("ADDON_LOADED")
+        end
     end
+
+    function MBD.UPDATE_INSTANCE_INFO()
+        --placeholder
+        eventFrame:UnregisterEvent("UPDATE_INSTANCE_INFO")
+    end
+
 end
 
-MythicBuddyEvents:Register("ADDON_LOADED", CheckAddonLoaded, "CheckAddonLoaded")
 
-function ZoneChanged()
-    if MB_FX:InInstance("In_Inst") == true and MB_FX:InInstance("Inst_Type") == 'party' then
-        ZONE_CHANGE_COUNTER = ZONE_CHANGE_COUNTER + 1
-        if ZONE_CHANGE_COUNTER == 1 then
-            CreateBuddy()
-        else return end
-    end
-end
-
-MB_EV:Register("UPDATE_INSTANCE_INFO", ZoneChanged, 'ZoneChanged')
 
 local previousWindow
 local previousTooltip
@@ -77,7 +88,7 @@ function CreateBuddy()
 
     --#region Affix Functions
     --affix1-----------------
-    w.affix_container_1 = MB_FR:CreateNewFrame("affix_container_1", "", "TOPLEFT", w.MyKeystoneInfo,
+    w.affix_container_1 = MB_FR:CreateNewFrame("affix_container_1", "", "TOPLEFT", w,
         "BOTTOMLEFT", w, 0, -10, 400, 20)
     w.affix_icon_1 = MB_FR:AddIcon(w.affix_container_1, "LEFT", MB_FX:MyAffIcon("AFFIX1"), 20, 20)
     w.affix_string_1 = MB_FR:AddFontString("AFFIX1", w, "LEFT", w.affix_icon_1, "RIGHT", 5, 0,

@@ -195,3 +195,4 @@ addon.AffixInfo = {
     [159] = { "Xal'atath's Bargain: Oblivion", "While in combat, Xal'atath manifests crystals from the void that can be absorbed by enemies or players.", 1386548 },
     [160] = { "Xal'atath's Bargain: Devour", "While in combat, Xal'atath tears open rifts that devour the essence of players.", 5927657 },
 }
+

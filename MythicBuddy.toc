@@ -8,5 +8,6 @@ init.lua
 data.lua
 events.lua
 functions.lua
+map.lua
 frames.lua
-MythicBuddy.lua
+## MythicBuddy.lua
